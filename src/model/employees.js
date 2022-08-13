@@ -9,11 +9,19 @@ const Employee = function (employee) {
   this.emp_no = employee.emp_no;
 };
 
-Employee.getAllEmployees = (result) => {
-  dbconn.query(`SELECT * FROM employees limit 200`, (err, res) => {
+Employee.getAllEmployees = (query, result) => {
+  let limit = 10;
+  let select = "*";
+  if (query.limit) {
+    limit = query.limit;
+  }
+  if (query.select) {
+    select = query.select;
+  }
+  dbconn.query(`SELECT ${select} FROM employees LIMIT ${limit}`, (err, res) => {
     if (err) {
       console.log("Error while fetching employees", err);
-      result(null, err);
+      result(err);
     } else {
       console.log("Fetched employees data successfully!!");
       result(null, res);

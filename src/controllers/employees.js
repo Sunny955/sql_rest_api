@@ -4,7 +4,11 @@ const Employee = require("../model/employees");
 //@route        /api/v1/employees
 
 exports.getemployees = (req, res, next) => {
-  Employee.getAllEmployees((err, employees) => {
+  let query;
+  if (req.query) {
+    query = req.query;
+  }
+  Employee.getAllEmployees(query, (err, employees) => {
     if (err) {
       return res.status(400).json({
         error: err,
