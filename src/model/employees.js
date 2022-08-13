@@ -9,23 +9,54 @@ const Employee = function (employee) {
   this.emp_no = employee.emp_no;
 };
 
-Employee.getAllEmployees = (query, result) => {
-  let limit = 10;
+Employee.getAllEmployees = (get_query, result) => {
+  let limit = 100;
   let select = "*";
-  if (query.limit) {
-    limit = query.limit;
+  if (get_query.limit) {
+    limit = get_query.limit;
   }
-  if (query.select) {
-    select = query.select;
+  if (get_query.select) {
+    select = get_query.select;
   }
-  dbconn.query(`SELECT ${select} FROM employees LIMIT ${limit}`, (err, res) => {
-    if (err) {
-      console.log("Error while fetching employees", err);
-      result(err);
-    } else {
-      console.log("Fetched employees data successfully!!");
-      result(null, res);
-    }
+  let query = `SELECT * FROM employees`;
+  dbconn.query(query, (err, res) => {
+    //Pagination
+    const page = parseInt(get_query.page, 10) || 1;
+    const new_limit = parseInt(get_query.limit, 10) || limit;
+    const startIndex = (page - 1) * new_limit;
+    const endIndex = page * new_limit;
+    const total = res.length;
+
+    query = `SELECT ${select} FROM employees LIMIT ${startIndex},${new_limit}`;
+    dbconn.query(query, (err, res) => {
+      if (err) {
+        console.log("Error while fetching employees", err);
+        result(err);
+      } else {
+        // Pagination result
+        const pagination = {};
+
+        if (endIndex < total) {
+          pagination.next = {
+            page: page + 1,
+            limit: new_limit,
+          };
+        }
+
+        if (startIndex > 0) {
+          pagination.prev = {
+            page: page - 1,
+            limit: new_limit,
+          };
+        }
+
+        res.results = {
+          count: res.length,
+          pagination,
+        };
+        result(null, res);
+      }
+    });
   });
 };
 
