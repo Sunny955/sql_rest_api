@@ -109,11 +109,15 @@ Employee.updateEmployee = (emp_no, input, result) => {
         result({ status: false, msg: "Error in updating employee" });
       } else {
         console.log("Successfuly updated the data");
-        result(null, {
-          status: true,
-          msg: "Successfully updated the data",
-          insertId: res.emp_no,
-        });
+        dbconn.query(
+          `SELECT * FROM employees WHERE emp_no=${emp_no}`,
+          (err, res) => {
+            if (err) {
+              return result(err);
+            }
+            result(null, res);
+          }
+        );
       }
     }
   );

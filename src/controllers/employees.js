@@ -87,6 +87,7 @@ exports.updateemployee = (req, res, next) => {
     }
     res.status(200).json({
       success: true,
+      msg: "Successfully updated the data",
       data: employee,
     });
   });
