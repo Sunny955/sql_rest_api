@@ -16,7 +16,8 @@ exports.getemployees = (req, res, next) => {
     }
     res.status(200).json({
       success: true,
-      count_data: employees.results,
+      count: employees.length,
+      pagination: employees.results.pagination,
       data: employees,
     });
   });
