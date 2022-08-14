@@ -20,6 +20,10 @@ Employee.getAllEmployees = (get_query, result) => {
   }
   let query = `SELECT * FROM employees`;
   dbconn.query(query, (err, res) => {
+    if (err) {
+      console.log("Error occurred!!");
+      return result(err);
+    }
     //Pagination
     const page = parseInt(get_query.page, 10) || 1;
     const new_limit = parseInt(get_query.limit, 10) || limit;
